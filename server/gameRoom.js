@@ -16,13 +16,27 @@ import * as bot from './bot.js';
 const ATTACK = 0;
 const DEFENSE = 1;
 
+// Rythme des bots par phase : assez lent pour que les humains suivent
+// l'action (l'écart laisse le temps de regarder le chien).
+const BOT_TEMPO = {
+  [PHASES.ENCHERES]: [1100, 800],
+  [PHASES.APPEL_ROI]: [1400, 700],
+  [PHASES.ECART]: [3000, 1500],
+  [PHASES.JEU]: [1100, 1000],
+};
+
+function defaultBotDelay(phase) {
+  const [base, jitter] = BOT_TEMPO[phase] ?? [900, 600];
+  return base + Math.random() * jitter;
+}
+
 export class GameRoom {
   constructor({
     nbJoueurs,
     seats,
     rng = Math.random,
-    botDelay = () => 600 + Math.random() * 900,
-    resolveDelay = () => 1600,
+    botDelay = defaultBotDelay,
+    resolveDelay = () => 2600,
     onUpdate = () => {},
     onEvent = () => {},
     onDonneEnd = () => {},
@@ -117,10 +131,10 @@ export class GameRoom {
       const seat = g.currentSeat;
       this.schedule(() => {
         if (this.seats[seat].isBot) this.botAct(seat);
-      }, this.botDelay());
+      }, this.botDelay(g.phase));
     }
     if (g.phase === PHASES.FIN_DONNE && this.seats.every((s) => s.isBot)) {
-      this.schedule(() => this.act(0, 'donneSuivante'), this.botDelay());
+      this.schedule(() => this.act(0, 'donneSuivante'), this.botDelay(g.phase));
     }
   }
 

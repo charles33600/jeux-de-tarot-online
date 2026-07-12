@@ -67,6 +67,9 @@ socket.on('evenement', (evt) => {
     case 'chelem':
       toast(`${nom(evt.seat)} annonce un CHELEM !`, { type: 'error', duration: 6000 });
       break;
+    case 'pli':
+      toast(`${nom(evt.winnerSeat)} remporte le pli.`, { duration: 1800 });
+      break;
     case 'redonne':
       toast('Tout le monde passe : nouvelle donne.');
       break;
