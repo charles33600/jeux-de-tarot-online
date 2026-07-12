@@ -15,6 +15,29 @@ Puis ouvrez [http://localhost:3000](http://localhost:3000). Pour jouer à
 plusieurs sur la même machine, utilisez plusieurs fenêtres de navigation
 privée (chaque fenêtre a sa propre session).
 
+## Mettre le jeu en ligne (gratuit)
+
+⚠️ GitHub Pages ne convient pas : il n'héberge que des fichiers statiques,
+or le jeu a besoin d'un serveur Node.js permanent (parties, bots, temps
+réel Socket.IO). Utilisez plutôt un hébergeur d'applications gratuit :
+
+**Render** (recommandé, config fournie dans `render.yaml`) :
+
+1. Créez un compte gratuit sur [render.com](https://render.com) (connexion
+   possible avec votre compte GitHub).
+2. Cliquez sur **New → Blueprint**, choisissez ce dépôt, validez.
+3. Render construit et démarre le jeu, puis vous donne une adresse publique
+   du type `https://jeux-de-tarot-online.onrender.com` — partagez-la avec
+   vos amis, chacun crée/rejoint une table avec le code à 6 lettres.
+
+Alternatives équivalentes : [Railway](https://railway.app),
+[Fly.io](https://fly.io), [Glitch](https://glitch.com) (importer le dépôt,
+`npm start` est détecté automatiquement).
+
+Notes sur l'offre gratuite de Render : le serveur s'endort après ~15 min
+sans visite (la première connexion suivante prend ~30 s pour le réveiller)
+et l'état étant en mémoire, un redémarrage ferme les tables en cours.
+
 ## Fonctionnalités
 
 - **Tables par code aléatoire** (6 caractères), sans inscription.

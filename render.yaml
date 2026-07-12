@@ -1,0 +1,10 @@
+# Déploiement en un clic sur Render (https://render.com), offre gratuite.
+# Depuis le tableau de bord Render : New → Blueprint → choisir ce dépôt.
+services:
+  - type: web
+    name: jeux-de-tarot-online
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
