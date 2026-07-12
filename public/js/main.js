@@ -65,6 +65,7 @@ function preparerRamassage(prev, v) {
     prev.ecran !== 'table' ||
     v.ecran !== 'table' ||
     prev.donne !== v.donne ||
+    v.phase === 'FIN_DONNE' || // la modale de résultat s'ouvre : pas d'animation
     !prev.trick?.length ||
     v.trick?.length !== 0 ||
     !v.lastTrick
@@ -103,13 +104,23 @@ socket.on('erreur', ({ message }) => toast(message, { type: 'error' }));
 
 socket.on('evenement', (evt) => {
   const nom = (seat) => view?.seats?.[seat]?.name ?? 'Un joueur';
+  const bulle = (seat, text) => {
+    if (seat === null || seat === undefined) return;
+    ui.bubbles = ui.bubbles || {};
+    ui.bubbles[seat] = { text, ts: Date.now() };
+    render();
+    setTimeout(() => render(), 5400);
+  };
   switch (evt.type) {
     case 'preneur':
       toast(`${nom(evt.seat)} prend : ${CONTRACT_NAMES[evt.contract]}.`);
+      bulle(evt.seat, `Je prends : ${CONTRACT_NAMES[evt.contract]} !`);
       sons.annonce();
       break;
     case 'appel':
       toast(`Le preneur appelle ${cardName(evt.carte)}.`);
+      bulle(view?.takerSeat, `J'appelle ${cardName(evt.carte)}`);
+      sons.annonce();
       break;
     case 'chien':
       toast('Le chien est révélé.', { cards: renderCardRow(evt.cartes, { size: 'petite' }) });
@@ -137,7 +148,7 @@ socket.on('evenement', (evt) => {
       sons.fanfare();
       break;
     case 'pli':
-      toast(`${nom(evt.winnerSeat)} remporte le pli.`, { duration: 1800 });
+      bulle(evt.winnerSeat, 'Pli remporté !');
       sons.pli();
       break;
     case 'redonne':
