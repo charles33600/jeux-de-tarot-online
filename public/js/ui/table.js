@@ -4,6 +4,7 @@
 import { emit } from '../net.js';
 import { toast, modal, closeModal, bouton, el } from './dialogues.js';
 import { renderCard, renderCardRow } from './cartes.js';
+import { sons } from '../son.js';
 import { CONTRACT_NAMES, POIGNEE_NAMES, PHASES } from '/shared/constants.js';
 import { cardName } from '/shared/cards.js';
 
@@ -71,6 +72,12 @@ function renderTopBar(view, ui) {
   }
   const droite = el('div', 'bandeau-droite');
   droite.appendChild(
+    bouton(sons.muet ? '🔇' : '🔊', () => {
+      sons.toggleMuet();
+      ui.rerender();
+    }, 'btn-discret')
+  );
+  droite.appendChild(
     bouton('Scores', () => {
       ui.showScores = !ui.showScores;
       ui.rerender();
@@ -98,6 +105,7 @@ function renderSeats(plateau, view) {
     const pos = POSITIONS[n][rel];
     const s = view.seats[i];
     const plate = el('div', `siege pos-${pos}`);
+    plate.dataset.seat = i;
     if (i === view.currentSeat) plate.classList.add('tour');
     if (!s.connected) plate.classList.add('deconnecte');
 
@@ -274,11 +282,16 @@ function renderPoigneeBanner(barre, view, ui) {
 
 function renderHand(view, ui) {
   const main = el('div', 'main-joueur');
+  // Animation de distribution : une seule fois par donne, au début des enchères.
+  if (view.phase === PHASES.ENCHERES && ui.dealAnim !== view.donne) {
+    ui.dealAnim = view.donne;
+    main.classList.add('nouvelle');
+  }
   const actions = view.actions;
   const jouables = new Set(actions?.type === 'carte' ? actions.cartes : []);
   const ecartables = new Set(actions?.type === 'ecart' ? actions.ecartables : []);
 
-  for (const id of view.maMain) {
+  view.maMain.forEach((id, idx) => {
     let cls = '';
     if (actions?.type === 'carte') cls = jouables.has(id) ? 'jouable' : 'inerte';
     if (actions?.type === 'ecart') {
@@ -286,6 +299,7 @@ function renderHand(view, ui) {
       if (ui.ecartSel.has(id)) cls += ' choisie';
     }
     const c = renderCard(id, { extraClass: cls });
+    c.style.setProperty('--i', idx);
     if (actions?.type === 'carte' && jouables.has(id)) {
       c.addEventListener('click', async () => {
         const r = await emit('jeu:action', {
@@ -306,7 +320,7 @@ function renderHand(view, ui) {
       });
     }
     main.appendChild(c);
-  }
+  });
   return main;
 }
 

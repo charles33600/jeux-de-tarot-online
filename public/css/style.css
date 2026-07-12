@@ -132,7 +132,11 @@ button { font: inherit; }
   text-align: center;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
-.siege.tour { border-color: var(--or); box-shadow: 0 0 18px rgba(212,175,55,0.55); }
+.siege.tour { border-color: var(--or); animation: pulse-tour 1.6s ease-in-out infinite; }
+@keyframes pulse-tour {
+  0%, 100% { box-shadow: 0 0 12px rgba(212,175,55,0.4); }
+  50% { box-shadow: 0 0 26px rgba(212,175,55,0.9); }
+}
 .siege.deconnecte { opacity: 0.5; }
 .siege-nom { font-weight: 700; }
 .siege-badges { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; margin-top: 4px; }
@@ -148,10 +152,37 @@ button { font: inherit; }
 .pos-tl { top: 10px; left: 20%; }
 .pos-tr { top: 10px; right: 20%; }
 
-.pli-carte { position: absolute; display: flex; flex-direction: column; align-items: center; gap: 3px; animation: pose-carte 0.35s ease-out; }
+/* La carte posée glisse depuis le siège de son joueur (variables par position). */
+.pli-carte { position: absolute; display: flex; flex-direction: column; align-items: center; gap: 3px; --dx: 0px; --dy: 0px; }
+.pli-carte .carte { animation: pose-carte 0.4s ease-out backwards; }
 @keyframes pose-carte {
-  from { opacity: 0; transform: scale(1.35); }
-  to { opacity: 1; transform: scale(1); }
+  from { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.18); }
+  to { opacity: 1; transform: translate(0, 0) scale(1); }
+}
+.pli-b  { --dy: 90px; }
+.pli-t  { --dy: -90px; }
+.pli-l  { --dx: -120px; }
+.pli-r  { --dx: 120px; }
+.pli-tl { --dx: -90px; --dy: -60px; }
+.pli-tr { --dx: 90px; --dy: -60px; }
+
+/* Clones animés lors du ramassage du pli. */
+.carte-vol {
+  position: fixed;
+  z-index: 45;
+  margin: 0 !important;
+  pointer-events: none;
+  transition: left 0.55s ease-in, top 0.55s ease-in, opacity 0.55s ease-in, transform 0.55s ease-in;
+}
+
+/* Distribution : les cartes de la main arrivent une à une. */
+.main-joueur.nouvelle .carte {
+  animation: distribue 0.45s ease-out backwards;
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+@keyframes distribue {
+  from { opacity: 0; transform: translateY(80px) rotate(5deg); }
+  to { opacity: 1; transform: translateY(0) rotate(0); }
 }
 .pli-nom { font-size: 0.72rem; background: rgba(0,0,0,0.4); padding: 1px 8px; border-radius: 8px; }
 .pli-b  { bottom: 22%; left: 50%; transform: translateX(-50%); }
@@ -342,6 +373,7 @@ button { font: inherit; }
   z-index: 50;
 }
 .modal-boite {
+  animation: modale-pop 0.28s ease-out;
   background: #2a2a2e;
   border-radius: 16px;
   padding: 26px 30px;
@@ -352,6 +384,10 @@ button { font: inherit; }
   flex-direction: column;
   gap: 8px;
   box-shadow: 0 12px 50px rgba(0,0,0,0.6);
+}
+@keyframes modale-pop {
+  from { opacity: 0; transform: scale(0.92) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }
 .modal-boite h2 { margin-bottom: 8px; }
 .modal-boite p { opacity: 0.9; margin-bottom: 8px; }
