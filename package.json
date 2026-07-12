@@ -1,0 +1,16 @@
+{
+  "name": "jeux-de-tarot-online",
+  "version": "1.0.0",
+  "description": "Jeu de Tarot français multijoueur en ligne — tables par code, 3 à 5 joueurs, bots IA",
+  "type": "module",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "node --test",
+    "simulate": "node test/simulate.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
+  }
+}
